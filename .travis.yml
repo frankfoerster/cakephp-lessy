@@ -1,0 +1,24 @@
+language: php
+
+php:
+  - 5.3
+  - 5.4
+
+env:
+  - CAKE_VERSION=2.3.4
+
+before_script:
+  - cd .. && git clone git://github.com/cakephp/cakephp cakephp && cd cakephp && git checkout $CAKE_VERSION && cd ..
+  - mkdir cakephp/app/Plugin/Lessy && cp -r cakephp-lessy/* cakephp/app/Plugin/Lessy
+  - chmod -R 777 cakephp/app/tmp
+  - set +H
+  - echo "" > cakephp/app/Config/database.php
+  - cd cakephp/app
+  - chmod 755 ./Console/cake
+
+script:
+  - sh -c "./Console/cake test Lessy AllLessyTests --stderr;"
+
+notifications:
+  irc: "irc.freenode.org#wasabi"
+  email: false
