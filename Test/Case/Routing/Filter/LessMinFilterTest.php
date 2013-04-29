@@ -54,6 +54,8 @@ class LessMinFilterTest extends CakeTestCase {
 			$css_folder->delete();
 		}
 
+		CakePlugin::unload('TestPlugin');
+
 		parent::tearDown();
 	}
 
