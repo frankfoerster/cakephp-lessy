@@ -13,12 +13,12 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-App::uses('DispatcherFilter', 'Routing');
 App::uses('CakePlugin', 'Core');
-App::uses('Folder', 'Utility');
+App::uses('DispatcherFilter', 'Routing');
 App::uses('File', 'Utility');
-App::import('Vendor', 'LessMin.Less');
+App::uses('Folder', 'Utility');
 App::import('Vendor', 'LessMin.CssMin');
+App::import('Vendor', 'LessMin.Less');
 
 class LessMinFilter extends DispatcherFilter {
 
