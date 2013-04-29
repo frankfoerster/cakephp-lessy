@@ -10,9 +10,9 @@
  * Redistributions of files must retain the below copyright notice.
  *
  * @copyright     Copyright 2013, Frank Förster (http://frankfoerster.com)
- * @link          http://github.com/frankfoerster/LessMin
- * @package       LessMin
- * @subpackage    LessMin.Routing.Filter
+ * @link          http://github.com/frankfoerster/cakephp-lessy
+ * @package       Lessy
+ * @subpackage    Lessy.Routing.Filter
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
@@ -20,8 +20,8 @@ App::uses('CakePlugin', 'Core');
 App::uses('DispatcherFilter', 'Routing');
 App::uses('File', 'Utility');
 App::uses('Folder', 'Utility');
-App::import('Vendor', 'LessMin.CssMin');
-App::import('Vendor', 'LessMin.Less');
+App::import('Vendor', 'Lessy.CssMin');
+App::import('Vendor', 'Lessy.Less');
 
 class LessMinFilter extends DispatcherFilter {
 
@@ -41,7 +41,7 @@ class LessMinFilter extends DispatcherFilter {
  */
 	public function beforeDispatch(CakeEvent $event) {
 		// check DEBUG Level and SKIP_ON_PRODUCTION setting
-		if (Configure::read('debug') === 0 && Configure::read('LessMin.SKIP_ON_PRODUCTION') === true) {
+		if (Configure::read('debug') === 0 && Configure::read('Lessy.SKIP_ON_PRODUCTION') === true) {
 			return 'skipped';
 		}
 		// process *.less files of all plugins

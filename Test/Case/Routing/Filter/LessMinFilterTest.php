@@ -7,9 +7,9 @@
  * Redistributions of files must retain the below copyright notice.
  *
  * @copyright     Copyright 2013, Frank Förster (http://frankfoerster.com)
- * @link          http://github.com/frankfoerster/LessMin
- * @package       LessMin
- * @subpackage    LessMin.Test.Case.Routing.Filter
+ * @link          http://github.com/frankfoerster/cakephp-lessy
+ * @package       Lessy
+ * @subpackage    Lessy.Test.Case.Routing.Filter
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
@@ -18,7 +18,7 @@ App::uses('CakePlugin', 'Core');
 App::uses('CakeTestCase', 'TestSuite');
 App::uses('File', 'Utility');
 App::uses('Folder', 'Utility');
-App::uses('LessMinFilter', 'LessMin.Routing/Filter');
+App::uses('LessMinFilter', 'Lessy.Routing/Filter');
 
 class LessMinFilterTest extends CakeTestCase {
 
@@ -29,13 +29,19 @@ class LessMinFilterTest extends CakeTestCase {
  */
 	protected $testAppWebroot;
 
+	protected $_forceLoad = false;
+
 /**
  * Setup the webroot of the test_app.
  *
  * @return void
  */
 	public function setUp() {
-		$this->testAppWebroot = CakePlugin::path('LessMin') . 'Test' . DS . 'test_app' . DS . 'webroot' . DS;
+		if (!CakePlugin::loaded('Lessy')) {
+			$this->_forceLoad = true;
+			CakePlugin::load('Lessy');
+		}
+		$this->testAppWebroot = CakePlugin::path('Lessy') . 'Test' . DS . 'test_app' . DS . 'webroot' . DS;
 
 		parent::setUp();
 	}
@@ -55,6 +61,10 @@ class LessMinFilterTest extends CakeTestCase {
 		}
 
 		CakePlugin::unload('TestPlugin');
+
+		if ($this->_forceLoad) {
+			CakePlugin::unload('Lessy');
+		}
 
 		parent::tearDown();
 	}
@@ -99,7 +109,7 @@ class LessMinFilterTest extends CakeTestCase {
 		$request = new CakeRequest('/');
 		$response = $this->getMock('CakeResponse');
 		App::build(array(
-			'Plugin' => array(CakePlugin::path('LessMin') . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'Plugin' => array(CakePlugin::path('Lessy') . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
 		), APP::RESET);
 
 		CakePlugin::load('TestPlugin');
@@ -126,7 +136,7 @@ class LessMinFilterTest extends CakeTestCase {
 	}
 
 /**
- * Test 'LessMin.SKIP_ON_PRODUCTION' setting
+ * Test 'Lessy.SKIP_ON_PRODUCTION' setting
  *
  * @covers LessMinFilter::beforeDispatch
  * @return void
@@ -138,7 +148,7 @@ class LessMinFilterTest extends CakeTestCase {
 
 		// check 'SKIP_ON_PRODUCTION' setting
 		$old_debug_lvl = Configure::read('debug');
-		Configure::write('LessMin.SKIP_ON_PRODUCTION', true);
+		Configure::write('Lessy.SKIP_ON_PRODUCTION', true);
 		Configure::write('debug', 0);
 		$event = new CakeEvent('DispatcherTest', $this, compact('request', 'response'));
 		$this->assertEqual('skipped', $filter->beforeDispatch($event));
