@@ -55,6 +55,7 @@ class LessMinFilter extends DispatcherFilter {
 		$webroot = APP . WEBROOT_DIR . DS;
 		$less_dir = new Folder($webroot . 'less');
 		$this->processLessFiles($less_dir, $webroot);
+		return null;
 	}
 
 /**
