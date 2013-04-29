@@ -1,4 +1,5 @@
 # Lessy = LessCSS + CSS-Minifier Plugin for CakePHP 2.3+
+[![Build Status](https://travis-ci.org/frankfoerster/cakephp-lessy.png?branch=master)](https://travis-ci.org/frankfoerster/cakephp-lessy)
 
 This plugin is based on:
 
