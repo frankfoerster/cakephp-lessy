@@ -1,0 +1,8 @@
+# Ignore Sublime Text files
+*.sublime*
+
+# Ignore PhpStorm project files
+.idea
+
+# Ignore Mac specific files
+.DS_Store
