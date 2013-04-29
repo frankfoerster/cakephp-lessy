@@ -13,11 +13,12 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-App::uses('LessMinFilter', 'LessMin.Routing/Filter');
-App::uses('Folder', 'Utility');
-App::uses('File', 'Utility');
+App::uses('CakeEvent', 'Event');
 App::uses('CakePlugin', 'Core');
 App::uses('CakeTestCase', 'TestSuite');
+App::uses('File', 'Utility');
+App::uses('Folder', 'Utility');
+App::uses('LessMinFilter', 'LessMin.Routing/Filter');
 
 class LessMinFilterTest extends CakeTestCase {
 
