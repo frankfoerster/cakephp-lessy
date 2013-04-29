@@ -36,6 +36,8 @@ class LessMinFilterTest extends CakeTestCase {
  */
 	public function setUp() {
 		$this->testAppWebroot = CakePlugin::path('LessMin') . 'Test' . DS . 'test_app' . DS . 'webroot' . DS;
+
+		parent::setUp();
 	}
 
 /**
@@ -51,6 +53,8 @@ class LessMinFilterTest extends CakeTestCase {
 			$css_folder = new Folder(CakePlugin::path($p) . 'webroot' . DS . 'css' . DS);
 			$css_folder->delete();
 		}
+
+		parent::tearDown();
 	}
 
 /**
