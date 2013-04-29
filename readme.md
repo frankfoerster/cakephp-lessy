@@ -1,4 +1,4 @@
-# LessCSS + CSS-Minifier Plugin for your CakePHP 2.x Project
+# Lessy = LessCSS + CSS-Minifier Plugin for your CakePHP 2.x Project
 
 This plugin is based on:
 
@@ -16,35 +16,35 @@ This plugin is based on:
 <a name="what-it-does"></a>
 ## 1. What it does
 
-LessMin is a CakePHP 2.x Plugin that helps you develop all of your styles with LessCss syntax for your app and for all your custom plugins.
+Lessy is a CakePHP 2.x Plugin that helps you develop all of your styles with LessCss syntax for your app and for all your custom plugins.
 
 On a typical CakeRequest cycle the plugin loads up via a custom DispatcherFilter and does all conversions and compressions automatically without polluting your beforeRender callbacks.
 
 **Processing Flow**
 
 1. Request is made
-2. LessMin checks all loaded Plugins for a folder in `/app/LoadedPlugin/webroot/less` and compiles all `*.less` files in this folder to `/app/LoadedPlugin/webroot/css/LessFilename.css`
-3. LessMin checks the app itself for a folder in `/app/webroot/less` and compiles all `*.less` files in this folder to `/app/webroot/css/LessFilename.css`
+2. Lessy checks all loaded Plugins for a folder in `/app/LoadedPlugin/webroot/less` and compiles all `*.less` files in this folder to `/app/LoadedPlugin/webroot/css/LessFilename.css`
+3. Lessy checks the app itself for a folder in `/app/webroot/less` and compiles all `*.less` files in this folder to `/app/webroot/css/LessFilename.css`
 
 The overhead of running this process on every request is very small, because LessCss automatically checks if the `*.less` files have been modified and a new compilation is really neccessary. Furthermore the compiled css files are only compressed if they are newly compiled.
 
-To minimize the workload even more, there is a config variable available that skips the whole LessMin processing on production.
+To minimize the workload even more, there is a config variable available that skips the whole Lessy processing on production.
 
 <a name="how-to-use"></a>
 ## 2. How to use
 
-1. Clone or [Download](http://github.com/worthy/lessmin/zipball/master) the project and add it to your `/app/Plugin/` folder. (resulting in `/app/Plugin/LessMin`)
+1. Clone or [Download](http://github.com/frankfoerster/cakephp-lessy/zipball/master) the project and add it to your `/app/Plugin/` folder. (resulting in `/app/Plugin/Lessy`)
 
-2. Enable the LessMin Plugin by adding the following line to your `/app/Config/bootstrap.php` file:
+2. Enable Lessy by adding the following line to your `/app/Config/bootstrap.php` file:
 
-        CakePlugin::load('LessMin');
+        CakePlugin::load('Lessy');
 
 3. Add the LessMinFilter to the DispatcherFilter configuration, again in `/app/Config/bootstrap.php`:
 
         Configure::write('Dispatcher.filters', array(
             'AssetDispatcher',
             'CacheDispatcher',
-            'LessMin.LessMinFilter' // <-- add this line
+            'Lessy.LessMinFilter' // <-- add this line
         ));
 
 4. Make sure all your `*.less` files reside in the folder `/app/webroot/less` or for Plugins in `/app/Plugin/YourPlugin/webroot/less`
