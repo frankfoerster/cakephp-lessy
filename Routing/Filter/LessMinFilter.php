@@ -1,5 +1,8 @@
 <?php
 /**
+ * LessMinFilter compiles *.less files to *.css and minifies them
+ * for all *.less files  in app/webroot/less/ and app/Plugin/../webroot/less/
+ * css files are written to app/webroot/css/  and app/Plugin/../webroot/css/
  *
  * PHP 5
  *
