@@ -1,4 +1,4 @@
-# Lessy = LessCSS + CSS-Minifier Plugin for your CakePHP 2.x Project
+# Lessy = LessCSS + CSS-Minifier Plugin for CakePHP 2.3+
 
 This plugin is based on:
 
@@ -16,7 +16,7 @@ This plugin is based on:
 <a name="what-it-does"></a>
 ## 1. What it does
 
-Lessy is a CakePHP 2.x Plugin that helps you develop all of your styles with LessCss syntax for your app and for all your custom plugins.
+Lessy lets you develop all of your styles with LessCss syntax, automatically compiles them to CSS and minifies them afterwards. Lessy not only handles your app styles, but can handle all of your custom plugins too.
 
 On a typical CakeRequest cycle the plugin loads up via a custom DispatcherFilter and does all conversions and compressions automatically without polluting your beforeRender callbacks.
 
