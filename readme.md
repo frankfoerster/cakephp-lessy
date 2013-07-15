@@ -106,6 +106,8 @@ Files in the `Vendor` folder are not part of this License Agreement and keep the
 
 Copyright (c) 2013 Frank Förster (http://frankfoerster.com)
 
+MIT License (http://www.opensource.org/licenses/mit-license.php)
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
