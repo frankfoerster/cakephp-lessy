@@ -66,15 +66,15 @@ class LessMinFilterTest extends CakeTestCase {
  * @return void
  */
 	public function tearDown() {
-		$css_folder = new Folder($this->testAppWebroot . 'css');
-		$css_folder->delete();
+		$cssFolder = new Folder($this->testAppWebroot . 'css');
+		$cssFolder->delete();
 
-		foreach (CakePlugin::loaded() as $p) {
-			$css_folder = new Folder(CakePlugin::path($p) . 'webroot' . DS . 'css' . DS);
-			$css_folder->delete();
+		if (CakePlugin::loaded('TestPlugin')) {
+			$cssFolder = new Folder(CakePlugin::path('TestPlugin') . 'webroot' . DS . 'css' . DS);
+			$cssFolder->delete();
+
+			CakePlugin::unload('TestPlugin');
 		}
-
-		CakePlugin::unload('TestPlugin');
 
 		if ($this->_forceLoad) {
 			CakePlugin::unload('Lessy');
@@ -91,24 +91,24 @@ class LessMinFilterTest extends CakeTestCase {
  */
 	public function testProcessLessFiles() {
 		$filter = new LessMinFilter();
-		$css_folder = $this->testAppWebroot . 'css' . DS;
+		$cssFolder = $this->testAppWebroot . 'css' . DS;
 
 		// css folder does not exist first hand
-		$this->assertFalse(is_dir($css_folder));
+		$this->assertFalse(is_dir($cssFolder));
 
 		// process less files
 		$filter->processLessFiles(new Folder($this->testAppAssets . 'less' . DS, false), $this->testAppWebroot);
 
 		// css folder should be there now
-		$this->assertTrue(is_dir($css_folder));
+		$this->assertTrue(is_dir($cssFolder));
 
 		// and the compiled css file should be present
-		$css_file = $css_folder . 'style.css';
-		$this->assertTrue(file_exists($css_file));
+		$cssFile = $cssFolder . 'style.css';
+		$this->assertTrue(file_exists($cssFile));
 
 		// check that the less file is correctly compiled to css and minified
 		$expected = 'body{color:#333;padding:0;margin:0}';
-		$result = file_get_contents($css_file);
+		$result = file_get_contents($cssFile);
 		$this->assertEqual($expected, $result);
 	}
 
@@ -127,25 +127,25 @@ class LessMinFilterTest extends CakeTestCase {
 		), APP::RESET);
 
 		CakePlugin::load('TestPlugin');
-		$plugin_webroot = CakePlugin::path('TestPlugin') . 'webroot' . DS;
-		$css_folder = $plugin_webroot . 'css' . DS;
+		$pluginWebroot = CakePlugin::path('TestPlugin') . 'webroot' . DS;
+		$cssFolder = $pluginWebroot . 'css' . DS;
 
 		// css folder does not exist first hand
-		$this->assertFalse(is_dir($css_folder));
+		$this->assertFalse(is_dir($cssFolder));
 
 		$event = new CakeEvent('DispatcherTest', $this, compact('request', 'response'));
 		$filter->beforeDispatch($event);
 
 		// css folder should be there now
-		$this->assertTrue(is_dir($css_folder));
+		$this->assertTrue(is_dir($cssFolder));
 
 		// and the compiled css file should be present
-		$css_file = $css_folder . 'style.css';
-		$this->assertTrue(file_exists($css_file));
+		$cssFile = $cssFolder . 'style.css';
+		$this->assertTrue(file_exists($cssFile));
 
 		// check that the less file is correctly compiled to css and minified
 		$expected = 'body{color:#333;padding:0;margin:0}';
-		$result = file_get_contents($css_file);
+		$result = file_get_contents($cssFile);
 		$this->assertEqual($expected, $result);
 	}
 
@@ -161,7 +161,7 @@ class LessMinFilterTest extends CakeTestCase {
 		$response = $this->getMock('CakeResponse');
 
 		// check 'SKIP_ON_PRODUCTION' setting
-		$old_debug_lvl = Configure::read('debug');
+		$oldDebugLvl = Configure::read('debug');
 		Configure::write('Lessy.SKIP_ON_PRODUCTION', true);
 		Configure::write('debug', 0);
 		$event = new CakeEvent('DispatcherTest', $this, compact('request', 'response'));
@@ -171,7 +171,7 @@ class LessMinFilterTest extends CakeTestCase {
 		$event = new CakeEvent('DispatcherTest', $this, compact('request', 'response'));
 		$this->assertNull($filter->beforeDispatch($event));
 
-		Configure::write('debug', $old_debug_lvl);
+		Configure::write('debug', $oldDebugLvl);
 	}
 
 }
