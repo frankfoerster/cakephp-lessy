@@ -48,12 +48,14 @@ class LessMinFilter extends DispatcherFilter {
 		$plugins = CakePlugin::loaded();
 		foreach ($plugins as $plugin) {
 			$webroot = CakePlugin::path($plugin) . 'webroot' . DS;
-			$less_dir = new Folder($webroot . 'less', false);
+			$assetDir = CakePlugin::path($plugin) . 'Assets' . DS;
+			$less_dir = new Folder($assetDir . 'less', false);
 			$this->processLessFiles($less_dir, $webroot);
 		}
 		// process *.less files of the app itself
 		$webroot = APP . WEBROOT_DIR . DS;
-		$less_dir = new Folder($webroot . 'less');
+		$assetDir = APP . 'Assets' . DS;
+		$less_dir = new Folder($assetDir . 'less');
 		$this->processLessFiles($less_dir, $webroot);
 		return null;
 	}

@@ -29,6 +29,18 @@ class LessMinFilterTest extends CakeTestCase {
  */
 	protected $testAppWebroot;
 
+/**
+ * Asset dir of testApp
+ *
+ * @var string
+ */
+	protected $testAppAssets;
+
+/**
+ * True if the Lessy plugin had to be specifically loaded for testing.
+ *
+ * @var bool
+ */
 	protected $_forceLoad = false;
 
 /**
@@ -42,12 +54,14 @@ class LessMinFilterTest extends CakeTestCase {
 			CakePlugin::load('Lessy');
 		}
 		$this->testAppWebroot = CakePlugin::path('Lessy') . 'Test' . DS . 'test_app' . DS . 'webroot' . DS;
+		$this->testAppAssets = CakePlugin::path('Lessy') . 'Test' . DS . 'test_app' . DS . 'Assets' . DS;
 
 		parent::setUp();
 	}
 
 /**
- * Delete css files/folders that have been created during the tests.
+ * Delete css files/folders that have been created during the tests
+ * and unload plugins.
  *
  * @return void
  */
@@ -83,7 +97,7 @@ class LessMinFilterTest extends CakeTestCase {
 		$this->assertFalse(is_dir($css_folder));
 
 		// process less files
-		$filter->processLessFiles(new Folder($this->testAppWebroot . 'less' . DS, false), $this->testAppWebroot);
+		$filter->processLessFiles(new Folder($this->testAppAssets . 'less' . DS, false), $this->testAppWebroot);
 
 		// css folder should be there now
 		$this->assertTrue(is_dir($css_folder));
