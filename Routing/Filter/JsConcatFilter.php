@@ -59,6 +59,14 @@ class JsConcatFilter extends DispatcherFilter {
 		return null;
 	}
 
+/**
+ * Process all *.js manifest files in $jsDir, parse the require statements and
+ * write the concatenated output to the $webroot js directory
+ *
+ * @param Folder $jsDir folder holding the *.js manifest files to be processed
+ * @param string $webroot absolute path to webroot with trailing DS
+ * @return void
+ */
 	public function processJsFiles(Folder $jsDir, $webroot) {
 		foreach ($jsDir->find('.*\.js') as $file) {
 			$manifestFile = new File($jsDir->path . DS . $file, false);

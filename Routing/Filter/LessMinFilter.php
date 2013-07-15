@@ -59,7 +59,7 @@ class LessMinFilter extends DispatcherFilter {
 	}
 
 /**
- * Process all *.less files in $less_dir and minify them afterwards.
+ * Process all *.less files in $lessDir and minify them afterwards.
  * Corresponding *.css files are saved in app/webroot/css or app/Plugin/PluginName/webroot/css
  * depending on the specified Less directory and webroot.
  *
