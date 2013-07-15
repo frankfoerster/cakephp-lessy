@@ -1,76 +1,105 @@
-# Lessy = LessCSS + CSS-Minifier Plugin for CakePHP 2.3+
+# Lessy = LessCSS + CSS-Minifier + JS Concatenator Plugin for CakePHP 2.3+
 [![Build Status](https://travis-ci.org/frankfoerster/cakephp-lessy.png?branch=master)](https://travis-ci.org/frankfoerster/cakephp-lessy)
 
-This plugin is based on:
-
-* [LessCSS](http://leafo.net/lessphp), a Less2Css compiler adapted from [http://lesscss.org](http://lesscss.org) by [Leaf Corcoran](mailto://leafot@gmail.com)
-* [YUI CSS compressor PHP port](https://github.com/tubalmartin/YUI-CSS-compressor-PHP-port), a Css compressor based on the popular YUI compressor.
-
-**Table of Contents**
-
-1. [What it does](#what-it-does)
-2. [How to use](#how-to-use)
-3. [Manage your Less Files](#manage-your-less-files)
-4. [TODOs](#todos)
-5. [License](#license)
-
-<a name="what-it-does"></a>
 ## 1. What it does
 
-Lessy lets you develop all of your styles with LessCss syntax, automatically compiles them to CSS and minifies them afterwards. Lessy not only handles your app styles, but can handle all of your custom plugins too.
+Lessy lets you develop all of your styles with LessCss syntax, automatically compiles them to CSS and minifies them afterwards. It also provides a simple JS concatenator similar to the Ruby on Rails asset pipeline. Lessy not only handles your app styles and js, but can handle all of your custom plugins too.
 
-On a typical CakeRequest cycle the plugin loads up via a custom DispatcherFilter and does all conversions and compressions automatically without polluting your beforeRender callbacks.
+The processing is done via custom DispatcherFilters and runs automatically on each request.
 
-**Processing Flow**
+To minimize the workload in production, there is a config variable available that skips the whole Lessy processing.
 
-1. Request is made
-2. Lessy checks all loaded Plugins for a folder in `/app/LoadedPlugin/webroot/less` and compiles all `*.less` files in this folder to `/app/LoadedPlugin/webroot/css/LessFilename.css`
-3. Lessy checks the app itself for a folder in `/app/webroot/less` and compiles all `*.less` files in this folder to `/app/webroot/css/LessFilename.css`
-
-The overhead of running this process on every request is very small, because LessCss automatically checks if the `*.less` files have been modified and a new compilation is really neccessary. Furthermore the compiled css files are only compressed if they are newly compiled.
-
-To minimize the workload even more, there is a config variable available that skips the whole Lessy processing on production.
-
-<a name="how-to-use"></a>
-## 2. How to use
+## 2. Install and load the plugin
 
 1. Clone or [Download](http://github.com/frankfoerster/cakephp-lessy/zipball/master) the project and add it to your `/app/Plugin/` folder. (resulting in `/app/Plugin/Lessy`)
-
 2. Enable Lessy by adding the following line to your `/app/Config/bootstrap.php` file:
 
         CakePlugin::load('Lessy');
 
-3. Add the LessMinFilter to the DispatcherFilter configuration, again in `/app/Config/bootstrap.php`:
+## 2. Using LessMinFilter (LessCSS + CSS-Minifier)
 
-        Configure::write('Dispatcher.filters', array(
-            'AssetDispatcher',
-            'CacheDispatcher',
-            'Lessy.LessMinFilter' // <-- add this line
-        ));
+**Directory Structure**
 
-4. Make sure all your `*.less` files reside in the folder `/app/webroot/less` or for Plugins in `/app/Plugin/YourPlugin/webroot/less`
+    app
+    - Assets
+      - less       <-- your app *.less files go here
+    - Plugin
+      - CustomPlugin
+        - Assets
+          - less   <-- your CustomPlugin *.less files go here
+        - webroot
+          - css    <-- the compiled CustomPlugin css files are automatically saved here
+    - webroot
+      - css        <-- the compiled app css files are automatically saved here
 
-<a name="manage-your-less-files"></a>
+**Enable LessMinFilter**
+
+Add LessMinFilter to the `Dispatcher.filters` configuration in `/app/Config/bootstrap.php`:
+
+    Configure::write('Dispatcher.filters', array(
+        'Lessy.LessMinFilter', // <-- add this line
+        'AssetDispatcher',
+        'CacheDispatcher'
+    ));
+
+## 3. Using JsConcatFilter (Javascript Concatenator)
+
+**Directory Structure**
+
+    app
+    - Assets
+      - js              <-- your app javascript libraries and manifests go here
+        - library_one
+          - build
+          - src
+        - library_two
+          - dist
+          - src
+        - app.js        <-- this is an example manifest file (you can name it however you want)
+    - Plugin
+      - CustomPlugin
+        - Assets
+          - js          <-- your CustomPlugin javascript libraries and manifests go here
+            - another_library
+              - build
+            - plugin.js <-- this is an example manifest file (you can name it however you want)
+        - webroot
+          - js
+            - plugin.js <-- this is the concatenated version of your Plugin/CustomPlugin/Assets/js/plugin.js manifest
+    - webroot
+      - js
+        - app.js        <-- this is the concatenated version of your Assets/js/app.js manifest
+
+**Manifest Files**
+
+Manifest files are `*.js` files that reside either in the `app/Assets/js` folder or in one of your plugin folders `app/Plugin/CustomPlugin/Assets/js`.
+They use a similar syntax to the Ruby on Rails asset pipeline.
+
+Following the directory structure from above, the `app.js` manifest may look like this:
+
+    //= require library_one/build/lib-one.min.js
+    //= require library_two/dist/lib-two.min.js
+
+The JsConcatFilter will then try to fetch the contents of these two required files and produce the concatenated `app.js` file in `app/webroot/js`.
+
 ## 3. Manage your Less Files
 
-Usually you want to maintain several less files for your project that compile down to one file. In LessCss, as you probably already know you can use `@import url(...);` statements to do that.
+Usually you maintain several less files for your project that compile down to one file. In LessCss, as you probably already know you can use `@import url(...);` statements to do that.
 
-But since the plugin compiles all `*.less` files to their corresponding `*.css` file you can simply give your mixin or grid or whatever imported files another file ending to avoid that.
+But since the plugin compiles all `*.less` files to their corresponding `*.css` file you have to use a different file extension for your secondary files, e.g. `*.less.inc` and adjust your import statements accordingly.
 
 For example if you have several files that you want to import into one master file and compile only that you could use the following pattern:
 
     app.less <-- this is your master file
-    mixins.less.ins <-- imported files get another file ending
-    reset.less.ins  <--                -.-
-    ....
+    grid.less.inc   <-- imported files get another file ending
+    reset.less.inc  <--                 -.-
+    ...
 
-<a name="todos"></a>
-## 4. TODOs
+## 4. Used Third Party Tools
 
-* Add configuration options to allow merging of all / several minified css files into one resulting file.
-* Add configuration options mapping to CssMin’s PHP settings overrides
+* [LessCSS](http://leafo.net/lessphp), a Less2Css compiler adapted from [http://lesscss.org](http://lesscss.org) by [Leaf Corcoran](mailto://leafot@gmail.com)
+* [YUI CSS compressor PHP port](https://github.com/tubalmartin/YUI-CSS-compressor-PHP-port), a Css compressor based on the popular YUI compressor.
 
-<a name="license"></a>
 ## 5. License
 
 Files in the `Vendor` folder are not part of this License Agreement and keep their original license as stated in their source.
