@@ -70,10 +70,12 @@ class JsConcatFilter extends DispatcherFilter {
 	public function processJsFiles(Folder $jsDir, $webroot) {
 		foreach ($jsDir->find('.*\.js') as $file) {
 			$manifestFile = new File($jsDir->path . DS . $file, false);
+			$manifestFileContents = $this->_normalizeLineEndings($manifestFile->read());
+
 			$matches = array();
 			$filesToConcat = array();
 
-			if (preg_match_all('/^\/\/=\srequire\s(.*)\.js$/im', $manifestFile->read(), $matches) > 0) {
+			if (preg_match_all("/^\/\/=\srequire\s(.*)\.js$/im", $manifestFileContents, $matches) > 0) {
 				foreach ($matches[1] as $m) {
 					$filesToConcat[] = $m . '.js';
 				}
@@ -89,12 +91,27 @@ class JsConcatFilter extends DispatcherFilter {
 				}
 				$jsFile->close();
 			}
-			$content = join("\n", $content) . "\n";
+			$content = join("\n", $content);
+			$content = $this->_normalizeLineEndings($content);
 
 			$outputFile = new File($webroot . 'js' . DS . $file, true, 0775);
 			$outputFile->write($content);
 			$outputFile->close();
 		}
+	}
+
+/**
+ * Normalize line endings to LF
+ *
+ * @param string $string
+ * @return string
+ */
+	private function _normalizeLineEndings($string) {
+		$string = str_replace("\r\n", "\n", $string);
+		$string = str_replace("\r", "\n", $string);
+		$string = preg_replace("/\n{2,}/", "\n\n", $string);
+
+		return $string;
 	}
 
 }
