@@ -91,7 +91,7 @@ class JsConcatFilter extends DispatcherFilter {
 				}
 				$jsFile->close();
 			}
-			$content = join("\n", $content);
+			$content = join("\n", $content) . "\n";
 			$content = $this->_normalizeLineEndings($content);
 
 			$outputFile = new File($webroot . 'js' . DS . $file, true, 0775);
