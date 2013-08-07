@@ -107,7 +107,7 @@ class JsConcatFilterTest extends CakeTestCase {
 		$this->assertTrue(file_exists($jsFile));
 
 		// check that the manifest file is correctly parsed and the contents are concatenated
-		$expected = "/** Custom Lib */\n\n/** Second Lib */\n\n";
+		$expected = "/** Custom Lib */" . PHP_EOL . PHP_EOL . "/** Second Lib */" . PHP_EOL . PHP_EOL;
 		$result = file_get_contents($jsFile);
 		$this->assertEqual($expected, $result);
 	}
@@ -144,7 +144,7 @@ class JsConcatFilterTest extends CakeTestCase {
 		$this->assertTrue(file_exists($jsFile));
 
 		// check that the manifest file is correctly parsed and the contents are concatenated
-		$expected = "/** Custom Lib */\n\n/** Second Lib */\n\n";
+		$expected = "/** Custom Lib */" . PHP_EOL . PHP_EOL . "/** Second Lib */" . PHP_EOL . PHP_EOL;
 		$result = file_get_contents($jsFile);
 		$this->assertEqual($expected, $result);
 	}

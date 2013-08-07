@@ -92,7 +92,7 @@ class JsConcatFilter extends DispatcherFilter {
 				$jsFile->close();
 			}
 			$content = join("\n", $content) . "\n";
-			$content = $this->_normalizeLineEndings($content);
+			$content = $this->_normalizeLineEndings($content, true);
 
 			$outputFile = new File($webroot . 'js' . DS . $file, true, 0775);
 			$outputFile->write($content);
@@ -106,10 +106,13 @@ class JsConcatFilter extends DispatcherFilter {
  * @param string $string
  * @return string
  */
-	private function _normalizeLineEndings($string) {
+	private function _normalizeLineEndings($string, $system = false) {
 		$string = str_replace("\r\n", "\n", $string);
 		$string = str_replace("\r", "\n", $string);
 		$string = preg_replace("/\n{2,}/", "\n\n", $string);
+		if ($system === true) {
+			$string = preg_replace("/\n/", PHP_EOL, $string);
+		}
 
 		return $string;
 	}
