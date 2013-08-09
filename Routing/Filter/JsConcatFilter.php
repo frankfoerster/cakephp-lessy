@@ -83,19 +83,25 @@ class JsConcatFilter extends DispatcherFilter {
 
 			$manifestFile->close();
 
-			$content = array();
-			foreach ($filesToConcat as $jsFilePath) {
-				$jsFile = new File($jsDir->path . DS . $jsFilePath, false);
-				if ($jsFile->exists()) {
-					$content[] = $jsFile->read();
-				}
-				$jsFile->close();
-			}
-			$content = join("\n", $content) . "\n";
-			$content = $this->_normalizeLineEndings($content, true);
+			$outputFilePath = $webroot . 'js' . DS . $file;
+			$outputFileExists = file_exists($outputFilePath);
+			$outputFile = new File($outputFilePath, true, 0775);
 
-			$outputFile = new File($webroot . 'js' . DS . $file, true, 0775);
-			$outputFile->write($content);
+			if (!$outputFileExists || $this->_hasChanged($manifestFile, $filesToConcat, $jsDir, $outputFile)) {
+				$content = array();
+				foreach ($filesToConcat as $jsFilePath) {
+					$jsFile = new File($jsDir->path . DS . $jsFilePath, false);
+					if ($jsFile->exists()) {
+						$content[] = $jsFile->read();
+					}
+					$jsFile->close();
+				}
+				$content = join("\n", $content) . "\n";
+				$content = $this->_normalizeLineEndings($content, true);
+
+				$outputFile->write($content);
+			}
+
 			$outputFile->close();
 		}
 	}
@@ -104,9 +110,10 @@ class JsConcatFilter extends DispatcherFilter {
  * Normalize line endings to LF
  *
  * @param string $string
+ * @param boolean $system
  * @return string
  */
-	private function _normalizeLineEndings($string, $system = false) {
+	protected function _normalizeLineEndings($string, $system = false) {
 		$string = str_replace("\r\n", "\n", $string);
 		$string = str_replace("\r", "\n", $string);
 		$string = preg_replace("/\n{2,}/", "\n\n", $string);
@@ -115,6 +122,35 @@ class JsConcatFilter extends DispatcherFilter {
 		}
 
 		return $string;
+	}
+
+/**
+ * Check if the last modified dt is greater than
+ * the last modified dt of the output file.
+ *
+ * @param File $manifestFile
+ * @param array $files
+ * @param Folder $jsDir
+ * @param File $outputFile
+ *
+ * @return boolean
+ */
+	protected function _hasChanged($manifestFile, $files, $jsDir, $outputFile) {
+		$hasChanged = false;
+		$outputFileModified = $outputFile->lastChange();
+		if ($manifestFile->lastChange() > $outputFileModified) {
+			return true;
+		}
+
+		foreach ($files as $filePath) {
+			$f = new File($jsDir->path . DS . $filePath, false);
+			if ($f->exists() && ($f->lastChange() > $outputFileModified)) {
+				$hasChanged = true;
+				break;
+			}
+		}
+
+		return $hasChanged;
 	}
 
 }

@@ -20,6 +20,22 @@ App::uses('File', 'Utility');
 App::uses('Folder', 'Utility');
 App::uses('JsConcatFilter', 'Lessy.Routing/Filter');
 
+/**
+ * Class JsConcatTestFilter
+ * provides to public wrappers for protected JsConcatFilter methods.
+ */
+class JsConcatTestFilter extends JsConcatFilter {
+
+	public function normalizeLineEndings($string, $system = false) {
+		return $this->_normalizeLineEndings($string, $system);
+	}
+
+	public function hasChanged($manifestFile, $files, $jsDir, $outputFile) {
+		return $this->_hasChanged($manifestFile, $files, $jsDir, $outputFile);
+	}
+
+}
+
 class JsConcatFilterTest extends CakeTestCase {
 
 /**
@@ -86,7 +102,7 @@ class JsConcatFilterTest extends CakeTestCase {
 /**
  * Test the functionality of LessMinFilter::processLessFiles
  *
- * @covers LessMinFilter::processLessFiles
+ * @covers JsConcatFilter::processJsFiles
  * @return void
  */
 	public function testProcessJsFiles() {
@@ -152,7 +168,7 @@ class JsConcatFilterTest extends CakeTestCase {
 /**
  * Test 'Lessy.SKIP_ON_PRODUCTION' setting
  *
- * @covers LessMinFilter::beforeDispatch
+ * @covers JsConcatFilter::beforeDispatch
  * @return void
  */
 	public function testSkipOnProduction() {
@@ -174,4 +190,82 @@ class JsConcatFilterTest extends CakeTestCase {
 		Configure::write('debug', $oldDebugLvl);
 	}
 
+/**
+ * Test normalization of line endings.
+ *
+ * @covers JsConcatFilter::_normalizeLineEndings
+ * @return void
+ */
+	public function testNormalizeLineEndings() {
+		$filter = new JsConcatTestFilter();
+		$string = "a\rb\r\nc\nd\n\n\ne";
+		$expected = "a\nb\nc\nd\n\ne";
+		$result = $filter->normalizeLineEndings($string, false);
+		$this->assertEqual($expected, $result);
+
+		$expected = "a" . PHP_EOL . "b" . PHP_EOL . "c" . PHP_EOL . "d" . PHP_EOL . PHP_EOL . "e";
+		$result = $filter->normalizeLineEndings($string, true);
+		$this->assertEqual($expected, $result);
+	}
+
+/**
+ * Test correct comparison of last modified file times
+ * returns false if the compiled file time is greater
+ * than the time of source files.
+ *
+ * @return void
+ */
+	public function testHasChanged1() {
+		$filter = new JsConcatTestFilter();
+		$jsDir = new Folder($this->testAppAssets . 'js', false);
+		$outputFile = new File($this->testAppWebroot . 'js' . 'test.js', true, 0755);
+		$files = array(
+			'second-lib' . DS . 'second-lib.js'
+		);
+		$manifestFile = new File($this->testAppAssets . 'js' . DS . 'app.js', false);
+		$this->assertFalse($filter->hasChanged($manifestFile, $files, $jsDir, $outputFile));
+	}
+
+/**
+ * Test correct comparison of last modified file times
+ * returns true if last modified time of a manifest file is greater
+ * than the time of the compiled file.
+ *
+ * @return void
+ */
+	public function testHasChanged2() {
+		$filter = new JsConcatTestFilter();
+		$jsDir = new Folder($this->testAppAssets . 'js', false);
+		$outputFile = new File($this->testAppWebroot . 'js' . 'test.js', true, 0755);
+		$files = array();
+		touch($outputFile->path, 0);
+		$manifestFile = new File($this->testAppAssets . 'js' . DS . 'app.js', false);
+		$this->assertTrue($filter->hasChanged($manifestFile, $files, $jsDir, $outputFile));
+		$outputFile->delete();
+	}
+
+/**
+ * Test correct comparison of last modified file times
+ * returns true if last modified time of source files is greater
+ * than the time of the compiled file.
+ *
+ * @return void
+ */
+	public function testHasChanged3() {
+		$filter = new JsConcatTestFilter();
+		$jsDir = new Folder($this->testAppAssets . 'js', false);
+		$outputFile = new File($this->testAppWebroot . 'js' . 'test.js', true, 0755);
+		$testFile = new File($this->testAppAssets . 'js' . DS . 'test.js', true, 0755);
+		$files = array(
+			'test.js'
+		);
+		touch($testFile->path);
+		touch($outputFile->path, 1);
+		$manifestFile = new File($this->testAppAssets . 'js' . DS . 'blub.js', true, 0755);
+		touch($manifestFile->path, 0);
+		$this->assertTrue($filter->hasChanged($manifestFile, $files, $jsDir, $outputFile));
+		$testFile->delete();
+		$manifestFile->delete();
+		$outputFile->delete();
+	}
 }
